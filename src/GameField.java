@@ -1,6 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
-public class GameField extends JPanel{
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Random;
+public class GameField extends JPanel implements ActionListener {
     private final int SIZE = 320;
     private final int DOT_SIZE = 16;
     private final int DOTS = 400;
@@ -20,16 +25,135 @@ public class GameField extends JPanel{
 
     public GameField()
     {
-        setBackground(Color.PINK);
+        setBackground(new Color(245, 202, 195));
         loadImages();
+        initGame();
+        addKeyListener(new FieldkeyListener());
+        setFocusable(true);
+    }
+
+    public void initGame(){
+
+        dots = 3; // начальное количество точек
+        for (int i = 0 ; i < dots; i++)
+        {
+            //начальные значения позиций
+            x[i] = 48-i*DOT_SIZE;
+            y[i] = 48;
+        }
+        timer = new Timer(250,this);
+        timer.start();
+        createApple();
+    }
+
+    public void createApple()
+    {
+        appleX = new Random().nextInt(20)*DOT_SIZE;
+        appleY = new Random().nextInt(20)*DOT_SIZE;
+
     }
 
     public void loadImages()
     {
-        ImageIcon iid = new ImageIcon("images/img_1.png");
+        ImageIcon iid = new ImageIcon("src/images/img-1.png");
         dot = iid.getImage();
-        ImageIcon iia = new ImageIcon("images/img.png");
+        ImageIcon iia = new ImageIcon("src/images/img.png");
         apple = iia.getImage();
     }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if(inGame){
+            g.drawImage(apple, appleX, appleY, this);
+            for (int i = 0; i < dots; i++){
+                g.drawImage(dot, x[i],y[i],this);
+            }
+        }
+        else {
+            String str = "GAME OVER!!!";
+          //  Font font = new Font("Arial", 14, Font.BOLD);
+        //    g.setFont(font);
+            g.setColor(Color.black);
+            g.drawString(str, 125, SIZE/2);
+        }
+    }
+
+    public void move()
+    {
+        for (int i = dots; i > 0; i--)
+        {
+            x[i] = x[i-1];
+            y[i]=y[i-1];
+        }
+        if(left)
+        {
+            x[0] -= DOT_SIZE;
+        }
+        if(right)
+        {
+            x[0] += DOT_SIZE;
+        }
+        if(up)
+        {
+            y[0] -= DOT_SIZE;
+        }
+        if(down)
+        {
+            y[0] += DOT_SIZE;
+        }
+    }
+    public void checkApple()
+    {
+        if(x[0] == appleX && y[0] == appleY)
+        {
+            dots++;
+            createApple();
+        }
+    }
+    public void checkCollissions(){
+        for (int i = dots; i > 0; i--) {
+            if(i>4&&x[0]==x[i]&&y[0]==y[i])
+                inGame =false;
+        }
+        if(x[0]>SIZE) inGame = false;
+        if(x[0]<0) inGame = false;
+        if(y[0]>SIZE) inGame = false;
+        if(y[0]<0) inGame = false;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(inGame)
+        {
+            checkApple();
+            checkCollissions();
+            move();
+        }
+        repaint();
+    }
+
+    class FieldkeyListener extends KeyAdapter{
+        @Override
+        public void keyPressed(KeyEvent e) {
+            super.keyPressed(e);
+            int key = e.getKeyCode();
+            if (key == KeyEvent.VK_LEFT && !right){
+                left = true;
+                up = down = false;
+            }
+            if (key == KeyEvent.VK_RIGHT && !left){
+                right = true;
+                up = down = false;
+            }
+            if (key == KeyEvent.VK_UP && !down){
+                up  = true;
+                left= right = false;
+            }
+            if (key == KeyEvent.VK_DOWN && !up){
+                down  = true;
+                left= right = false;
+            }
+        }
+    }
 }
