@@ -6,7 +6,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Random;
 public class GameField extends JPanel implements ActionListener {
-    private final int SIZE = 320;
+    private final int SIZE = 352;
     private final int DOT_SIZE = 16;
     private final int DOTS = 400;
     private Image dot;
@@ -22,10 +22,12 @@ public class GameField extends JPanel implements ActionListener {
     private boolean up;
     private boolean down;
     private boolean inGame = true;
+    public int count = 0;
 
     public GameField()
     {
-        setBackground(new Color(245, 202, 195));
+       // setBackground(new Color(245, 202, 195));
+        setBackground(Color.BLACK);
         loadImages();
         initGame();
         addKeyListener(new FieldkeyListener());
@@ -48,8 +50,8 @@ public class GameField extends JPanel implements ActionListener {
 
     public void createApple()
     {
-        appleX = new Random().nextInt(20)*DOT_SIZE;
-        appleY = new Random().nextInt(20)*DOT_SIZE;
+        appleX = new Random().nextInt(23)*DOT_SIZE;
+        appleY = new Random().nextInt(23)*DOT_SIZE;
 
     }
 
@@ -64,18 +66,22 @@ public class GameField extends JPanel implements ActionListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        String cnt = "COUNT: " + count;;
         if(inGame){
             g.drawImage(apple, appleX, appleY, this);
             for (int i = 0; i < dots; i++){
                 g.drawImage(dot, x[i],y[i],this);
             }
+            cnt = "COUNT: " + count;
+            g.setColor(Color.white);
+            g.drawString(cnt, 10, 15);
         }
         else {
-            String str = "GAME OVER!!!";
-          //  Font font = new Font("Arial", 14, Font.BOLD);
-        //    g.setFont(font);
-            g.setColor(Color.black);
-            g.drawString(str, 125, SIZE/2);
+            String str = "GAME OVER";
+            g.setColor(Color.white);
+            g.drawString(str, 170, 175);
+            g.drawString(cnt, 180, 155);
+
         }
     }
 
@@ -108,6 +114,7 @@ public class GameField extends JPanel implements ActionListener {
         if(x[0] == appleX && y[0] == appleY)
         {
             dots++;
+            count++;
             createApple();
         }
     }
