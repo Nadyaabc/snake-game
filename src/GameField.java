@@ -11,6 +11,7 @@ public class GameField extends JPanel implements ActionListener {
     private final int DOTS = 400;
     private Image dot;
     private Image apple;
+    private Image snakeHead;
     private int appleX;
     private int appleY;
     private int [] x = new int[DOTS];
@@ -61,6 +62,8 @@ public class GameField extends JPanel implements ActionListener {
         dot = iid.getImage();
         ImageIcon iia = new ImageIcon("src/images/img.png");
         apple = iia.getImage();
+        ImageIcon iish = new ImageIcon("src/images/snakehead.png");
+        snakeHead = iish.getImage();
     }
 
     @Override
@@ -69,7 +72,8 @@ public class GameField extends JPanel implements ActionListener {
         String cnt = "COUNT: " + count;;
         if(inGame){
             g.drawImage(apple, appleX, appleY, this);
-            for (int i = 0; i < dots; i++){
+            g.drawImage(snakeHead, x[0], y[0], this);
+            for (int i = 1; i < dots; i++){
                 g.drawImage(dot, x[i],y[i],this);
             }
             cnt = "COUNT: " + count;
